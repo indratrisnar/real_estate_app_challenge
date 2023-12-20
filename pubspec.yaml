@@ -1,0 +1,33 @@
+name: real_estate_app_challenge
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.2.3 <4.0.0"
+
+dependencies:
+  blur: ^3.1.0
+  flutter:
+    sdk: flutter
+  flutter_rating_bar: ^4.0.1
+  gap: ^3.0.1
+  get: ^4.6.6
+  map: ^1.4.2
+  intl: ^0.19.0
+  d_method: ^0.2.3
+  latlng: ^1.0.0
+  extended_image: ^8.2.0
+  map_launcher: ^3.1.0
+  d_info: ^0.2.2
+  d_button: ^0.0.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
