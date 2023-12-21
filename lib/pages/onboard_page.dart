@@ -118,7 +118,7 @@ class _OnBoardPageState extends State<OnBoardPage>
                                 ),
                               ),
                               const TextSpan(
-                                text: 'elegenat house this\nis the place',
+                                text: 'elegant house this\nis the place',
                                 style: TextStyle(
                                   color: Colors.black,
                                 ),
