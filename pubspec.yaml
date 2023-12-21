@@ -21,6 +21,8 @@ dependencies:
   map_launcher: ^3.1.0
   d_info: ^0.2.2
   d_button: ^0.0.10
+  shimmer: ^3.0.0
+  flutter_animate: ^4.3.0
 
 dev_dependencies:
   flutter_test:

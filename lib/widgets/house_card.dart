@@ -23,6 +23,7 @@ class HouseCard extends StatelessWidget {
             children: [
               Positioned.fill(
                 child: Hero(
+                  transitionOnUserGestures: true,
                   tag: 'thubnmail_${house.thumbnail}',
                   child: Image.asset(
                     house.thumbnail,

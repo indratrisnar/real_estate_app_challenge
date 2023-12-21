@@ -1,29 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:real_estate_app_challenge/common/app_color.dart';
+import 'package:real_estate_app_challenge/controllers/home_controller.dart';
 import 'package:real_estate_app_challenge/models/house.dart';
 import 'package:real_estate_app_challenge/widgets/house_card.dart';
+import 'package:real_estate_app_challenge/widgets/shimmers/ads_shimmer.dart';
+import 'package:real_estate_app_challenge/widgets/shimmers/popular_shimmer.dart';
+import 'package:real_estate_app_challenge/widgets/shimmers/recommendation_shimmer.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  final homeController = HomeController();
+
+  @override
+  void initState() {
+    homeController.init(vsync: this);
+    homeController.execute();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    homeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: buildHeader(context),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(20),
-        children: [
-          buildPromote(),
-          const Gap(24),
-          HouseCard(house: recommendationHouse),
-          const Gap(24),
-          buildPupularHouse(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          homeController.execute();
+        },
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(20),
+          children: [
+            buildAds(),
+            const Gap(24),
+            buildRecommendation(),
+            const Gap(24),
+            buildPupularHouse(),
+          ],
+        ),
       ),
       bottomNavigationBar: buildBottomNav(),
+    );
+  }
+
+  Widget buildRecommendation() {
+    return AnimatedBuilder(
+      animation: homeController.recommendationAnimation,
+      builder: (context, child) {
+        if (homeController.recommendationAnimation.isAnimating) {
+          return const RecommendationShimmer();
+        }
+        return HouseCard(
+          house: recommendationHouse,
+        );
+      },
     );
   }
 
@@ -54,18 +97,26 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-        ListView.builder(
-          itemCount: popularHouse.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            House house = popularHouse[index];
-            return Padding(
-              padding: EdgeInsets.only(
-                top: index == 0 ? 16 : 8,
-                bottom: index == popularHouse.length - 1 ? 0 : 8,
-              ),
-              child: HouseCard(house: house),
+        AnimatedBuilder(
+          animation: homeController.popularAnimation,
+          builder: (context, child) {
+            if (homeController.popularAnimation.isAnimating) {
+              return const PopularShimmer();
+            }
+            return ListView.builder(
+              itemCount: popularHouse.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                House house = popularHouse[index];
+                return Padding(
+                  padding: EdgeInsets.only(
+                    top: index == 0 ? 16 : 8,
+                    bottom: index == popularHouse.length - 1 ? 0 : 8,
+                  ),
+                  child: HouseCard(house: house),
+                );
+              },
             );
           },
         ),
@@ -73,62 +124,70 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  SizedBox buildPromote() {
-    return SizedBox(
-      height: 140,
-      width: double.infinity,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/house1.jpg',
-              alignment: Alignment.topCenter,
-              fit: BoxFit.cover,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-              ),
-              padding: const EdgeInsets.all(20),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Let's buy a house\nhere",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
+  Widget buildAds() {
+    return AnimatedBuilder(
+      animation: homeController.adsAnimation,
+      builder: (context, child) {
+        if (homeController.adsAnimation.isAnimating) {
+          return const AdsShimmer();
+        }
+        return SizedBox(
+          height: 140,
+          width: double.infinity,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  'assets/house1.jpg',
+                  alignment: Alignment.topCenter,
+                  fit: BoxFit.cover,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
                   ),
-                  Row(
+                  padding: const EdgeInsets.all(20),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Discount 10%",
+                        "Let's buy a house\nhere",
                         style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
                         ),
                       ),
-                      Text(
-                        "12 October 2022",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 18,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Discount 10%",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            "12 October 2022",
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
