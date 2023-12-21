@@ -28,13 +28,6 @@ class HomeController {
     popularAnimation.value = 0.0;
   }
 
-  execute() {
-    reset();
-    adsAnimation.forward(from: 0.0);
-    recommendationAnimation.forward(from: 0.0);
-    popularAnimation.forward(from: 0.0);
-  }
-
   dispose() {
     adsAnimation.dispose();
     recommendationAnimation.dispose();

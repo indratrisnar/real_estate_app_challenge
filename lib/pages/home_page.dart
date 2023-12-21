@@ -18,10 +18,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final homeController = HomeController();
 
+  startAnimation() {
+    homeController.reset();
+    if (mounted) homeController.adsAnimation.forward();
+    if (mounted) homeController.recommendationAnimation.forward();
+    if (mounted) homeController.popularAnimation.forward();
+  }
+
   @override
   void initState() {
     homeController.init(vsync: this);
-    homeController.execute();
+    startAnimation();
     super.initState();
   }
 
@@ -37,9 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: buildHeader(context),
       body: RefreshIndicator(
-        onRefresh: () async {
-          homeController.execute();
-        },
+        onRefresh: () async => startAnimation(),
         child: ListView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(20),
